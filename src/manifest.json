@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Unfix",
+  "description": "Hides or releases fixed HTML elements to make site content easier to read",
+  "version": "0.0.1",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_title": "Unfix"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "tabs","<all_urls>", "activeTab", "storage"
+  ]
+}
