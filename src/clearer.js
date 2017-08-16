@@ -26,15 +26,17 @@
 	}
 	
 	var unclearer = function(data) {
+		var removed = false;
 		for (var i=0; i<data.length; i++) {
 			var datum = data[i];
-			var elem = document.getElementsByClassName(_className+datum.elemIndex)[0];
+			var elem = document.getElementsByClassName(_className+datum.elementIndex)[0];
 			if (elem) {
-				elem.setAttribute('style','position: '+datum.position);
-				elem.style.opacity = datum.opacity;
+				removed = true;
+				elem.classList.remove(_className + datum.elementIndex);
+				elem.setAttribute('style', datum.originalStyle);
 			}
 		}
-		return null;
+		return removed;
 	};
 	var clearer = function() {
 		var modifiedElements = [];
@@ -45,18 +47,26 @@
 			    if (elem && elem.toString().indexOf("HTML")>-1) {
 			    	var computedStyle = window.getComputedStyle(elem,null);
 			    	if (computedStyle.getPropertyValue('position').indexOf('fixed')>-1) {
-			    		modifiedElements.push({elemIndex: i, position: computedStyle.getPropertyValue('position'), opacity: computedStyle.getPropertyValue('opacity')});
+			    		var originalStyle = elem.style.cssText;
+			    		modifiedElements.push({elementIndex: i, originalStyle: originalStyle});
 			        	var top = computedStyle.getPropertyValue('top');
 			        	var bottom = computedStyle.getPropertyValue('bottom');
+			        	var left = computedStyle.getPropertyValue('left');
+			        	var right = computedStyle.getPropertyValue('right');
 			        	// make headers non-floating
 			        	if (top==='0px' && bottom!=='0px') {
-		        			elem.setAttribute('style','position: absolute !important');
+		        			elem.setAttribute('style',originalStyle + 'position: absolute !important');
 			        	} else 
 			        	// make footers bottom sticky
 			        	if (bottom==='0px' && top!=='0px') {
-		        			elem.setAttribute('style','position: absolute !important');
+		        			elem.setAttribute('style',originalStyle + 'position: absolute !important');
 		        			document.getElementsByTagName('body')[0].style.position = 'relative';
-			        	} else {
+			        	}  else 
+			        	// make screen blockers completely hidden
+			        	if (bottom==='0px' && top==='0px' && left==='0px' && right==='0px') {
+			        		elem.setAttribute('style',originalStyle + 'display: none !important');
+			        	}
+			        	else {
 		        			elem.style.opacity = 0.1;
 			        	}
 			        	elem.classList.add(_className + i);
@@ -70,10 +80,12 @@
 		return modifiedElements;
 	};
 	var data = chrome.storage.local.get('clearData', function(data) {
+		var removed = false;
 		if (data.clearData) {
 			chrome.storage.local.remove('clearData');
-			unclearer(data.clearData);
-		} else {
+			removed = unclearer(data.clearData);
+		}
+		if (!removed) {
 			chrome.storage.local.set({clearData: clearer()});
 		}
 	});
