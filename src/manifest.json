@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Unfix",
-  "description": "Hides or releases fixed HTML elements to make site content easier to read",
+  "name": "Readable Web",
+  "description": "Automatically optimizes layout of sites to improve readability, with minimal alteration to their functionality",
   "version": "0.0.1",
 
   "browser_action": {

@@ -57,7 +57,7 @@
 			        	if (top==='0px' && bottom!=='0px') {
 		        			elem.setAttribute('style',originalStyle + 'position: absolute !important');
 			        	} else 
-			        	// make footers bottom sticky
+			        	// make footers sticky to bottom
 			        	if (bottom==='0px' && top!=='0px') {
 		        			elem.setAttribute('style',originalStyle + 'position: absolute !important');
 		        			document.getElementsByTagName('body')[0].style.position = 'relative';
@@ -66,6 +66,7 @@
 			        	if (bottom==='0px' && top==='0px' && left==='0px' && right==='0px') {
 			        		elem.setAttribute('style',originalStyle + 'display: none !important');
 			        	}
+			        	// make other floating elements mostly invisible
 			        	else {
 		        			elem.style.opacity = 0.1;
 			        	}
