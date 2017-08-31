@@ -1,3 +1,7 @@
+var siteOptions = {};
+var options = {};
+var siteName;
+var optionsKey = 'siteOptions';
 // extracting host name from url source: https://stackoverflow.com/a/23945027
 function extractHostname(url) {
     var hostname;
@@ -28,11 +32,17 @@ function extractRootDomain(url) {
     }
     return domain;
 }
+var saveSiteOptions = function(_siteUrl, _siteOptions) {
+	var _siteName = extractRootDomain(_siteUrl);
+	options[_siteName] = _siteOptions;
+	var data = {};
+	data[optionsKey] = options;	
+	chrome.storage.sync.set(data);
+};
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	if (changeInfo.status!=="complete") return;
     chrome.tabs.getSelected(null, function(tab) {
-    	var siteName = extractRootDomain(tab.url);
-		var optionsKey = 'siteOptions';
+    	siteName = extractRootDomain(tab.url);
 		console.log("auto loading clearer. siteName", siteName);
 		chrome.storage.sync.get(optionsKey, function(options) {
 			options = options[optionsKey] || {};
