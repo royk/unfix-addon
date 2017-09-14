@@ -9,18 +9,23 @@ var saveSiteOptions = function(siteOptions) {
 	});
 };
 document.addEventListener('DOMContentLoaded', function() {
-	var siteOptions = chrome.extension.getBackgroundPage().siteOptions || {};
-	console.log("siteOptions", siteOptions);
-	// instrument toggle button
-	let enableButton = document.getElementById("enableButton");
-	enableButton.onclick = function() {
-		runClearerScript();
-	};
-	// instrument always on checkbox
-	let alwaysOnCB = document.getElementById("alwaysOnCB");
-	alwaysOnCB.checked =  siteOptions.autoEnabled;
-	alwaysOnCB.onclick = function() {
-		siteOptions.autoEnabled = alwaysOnCB.checked
-		saveSiteOptions(siteOptions);
-	};
+	chrome.storage.local.get('clearData', function(data) {
+		var siteOptions = chrome.extension.getBackgroundPage().siteOptions || {};
+		console.log("siteOptions", siteOptions);
+		// instrument toggle button
+		let enableButton = document.getElementById("enableButton");
+		enableButton.onclick = function() {
+			runClearerScript();
+		};
+		if (data.clearData || siteOptions.autoEnabled) {
+			enableButton.innerText = "Restore original layout"
+		}
+		// instrument always on checkbox
+		let alwaysOnCB = document.getElementById("alwaysOnCB");
+		alwaysOnCB.checked =  siteOptions.autoEnabled;
+		alwaysOnCB.onclick = function() {
+			siteOptions.autoEnabled = alwaysOnCB.checked
+			saveSiteOptions(siteOptions);
+		};
+	});
 });
