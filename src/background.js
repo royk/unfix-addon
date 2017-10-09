@@ -40,7 +40,9 @@ var saveSiteOptions = function(_siteUrl, _siteOptions) {
 	chrome.storage.sync.set(data);
 };
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-	if (changeInfo.status!=="complete") return;
+	if (changeInfo.status!=="complete") {
+		return;
+	}
     chrome.tabs.getSelected(null, function(tab) {
     	siteName = extractRootDomain(tab.url);
 		console.log("auto loading clearer. siteName", siteName);
@@ -55,4 +57,5 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 		  	}
 		});
 	});
+	chrome.runtime.sendMessage({event: "onUpdated"});
 });
