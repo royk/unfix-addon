@@ -54,7 +54,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 	  				console.log("Auto running clearer")
 	  				chrome.tabs.executeScript(tab.id, {file: "clearer.js"});
 	  			}
-		  	}
+		  	} else {
+                siteOptions.autoEnabled = false;
+            }
+            chrome.runtime.sendMessage({event: "onReady"});
 		});
 	});
 	chrome.runtime.sendMessage({event: "onUpdated"});

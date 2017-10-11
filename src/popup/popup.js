@@ -9,30 +9,33 @@ var saveSiteOptions = function(siteOptions) {
 	});
 };
 var originalLayout = true;
-var updatePopupTexts = function(isOriginalLayout, clearButton) {
+var enableButton = null;
+var updatePopupTexts = function(isOriginalLayout) {
 	console.log("updatePopupTexts");
 	console.log("isOriginalLayout", isOriginalLayout);
 	if (isOriginalLayout) {
-		clearButton.innerText = "Improve readability";
+		enableButton.innerText = "Improve readability";
 	} else {
-		clearButton.innerText = "Restore original layout"
+		enableButton.innerText = "Restore original layout"
 	}
 }
 var updatePopup = function() {
 	console.log("updatePopup");
+	console.log("originalLayout", originalLayout);
+	updatePopupTexts(originalLayout);
+};
+var instrumentPopup = function() {
 	var siteOptions = chrome.extension.getBackgroundPage().siteOptions || {};
 	console.log("siteOptions", siteOptions);
 	originalLayout = !siteOptions.autoEnabled;
-	console.log("originalLayout", originalLayout);
-	// instrument toggle button
-	let enableButton = document.getElementById("enableButton");
-	updatePopupTexts(originalLayout, enableButton);
+	// instrument enable button
+	enableButton = document.getElementById("enableButton");
 	enableButton.onclick = function() {
 		originalLayout = !originalLayout;
 		runClearerScript();
-		updatePopupTexts(originalLayout, enableButton);
+		updatePopup();
 	};
-	
+
 	// instrument always on checkbox
 	let alwaysOnCB = document.getElementById("alwaysOnCB");
 	alwaysOnCB.checked =  siteOptions.autoEnabled;
@@ -40,16 +43,20 @@ var updatePopup = function() {
 		siteOptions.autoEnabled = alwaysOnCB.checked
 		saveSiteOptions(siteOptions);
 	};
+	updatePopup();
 };
 document.addEventListener('DOMContentLoaded', function() {
-	console.log("DOMContentLoaded");
-	updatePopup();
+	instrumentPopup();
 });
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if (request.event === "onUpdated") {
         	console.log("onUpdated");
-           updatePopup();
+			updatePopup();
+        }
+        if (request.event === "onReady") {
+			console.log("onReady");
+			updatePopup();
         }
     }
 );
